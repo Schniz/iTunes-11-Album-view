@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Itunes 11 Album Folder ui</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #itune {            
+            margin: auto;
+            position: relative;
+        }
+        #itune ul {
+            margin: 0;
+            padding: 0;
+        }
+        #itune ul li {
+            list-style: none;            
+            position: absolute;
+            left: 0; top: 0;
+            width: 160px;
+            height: 160px;
+            z-index: 8;
+
+            -webkit-transition: all 0.5s ease-out;
+            -moz-transition: all 0.5s ease-out;
+            -ms-transition: all 0.1s ease-out;
+            -o-transition: all 0.1s ease-out;
+            transition: all 0.1s ease-out;
+        }
+        #itune ul li img {
+            display: block;
+            width: 160px;
+            height: 160px;
+            -webkit-transition: all 0.1s ease-out;
+            -moz-transition: all 0.1s ease-out;
+            -ms-transition: all 0.1s ease-out;
+            -o-transition: all 0.1s ease-out;
+            transition: all 0.1s ease-out;
+
+            -webkit-box-shadow:  0px 2px 10px 0px rgba(0, 0, 0, 0.2);
+            box-shadow:  0px 2px 10px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        #itune ul li.selected {
+            z-index: 10;
+        }
+
+        #itune ul li.selected img {
+            -webkit-transform: scale(1.09);
+            -moz-transform: scale(1.09);
+            -ms-transform: scale(1.09);
+            -o-transform: scale(1.09);
+            transform: scale(1.09);
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="itune">
+        
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+        $(function(){
+            var holder = $("#itune"),
+                i,
+                numofimages = 10,
+                lis = [], imgW = 160, imgH = 160;
+
+            for(i = 1; i <= 10; i++){
+                lis.push("<img src='img/img"+i+".jpg' />");
+            }
+
+            lis.sort(function() {return 0.5 - Math.random()});
+
+            holder.html($("<ul/>").html("<li>" + lis.join("</li><li>") + "</li>"));
+
+            arrange_tiles();
+
+            holder.find("li").click(function(){
+                holder.find("li").removeClass("selected");
+                $(this).addClass("selected");
+            });
+
+            $(window).resize(function() {
+                arrange_tiles();
+            });
+
+            function arrange_tiles(){
+                
+                var maxCols = 4 , 
+                    minCols = 4, 
+                    minPad = 20, 
+                    docMW = (minCols * (imgW + minPad)) + minPad , 
+                    docW = $(window).width(), 
+                    docH = $(window).height(), 
+                    cRow = 0, 
+                    cCol = 0;
+                
+                if(docMW < docW) {
+                    maxCols = Math.floor( (docW - minPad) / (imgW + minPad) );
+                } else {
+                    maxCols = minCols
+                }
+
+                holder.css("minWidth",docMW+"px").find("li").each(function(i,elem){                    
+                    
+                    $(elem).css({
+                        "left"  : cCol * (imgW+minPad) + minPad + "px",
+                        "top"   : cRow * (imgH+minPad) + minPad + "px"
+                    });
+
+                    cCol++;
+                    if(cCol%maxCols == 0) {
+                        cRow++;
+                        cCol = 0;
+                    }
+
+                    console.log(cRow , cCol);
+                })
+            }
+
+        });
+    </script>
+</body>
+</html>
