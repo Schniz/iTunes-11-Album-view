@@ -23,12 +23,11 @@
             width: 160px;
             height: 160px;
             z-index: 8;
-
-            -webkit-transition: all 0.5s ease-out;
+            /* -webkit-transition: all 0.5s ease-out;
             -moz-transition: all 0.5s ease-out;
             -ms-transition: all 0.1s ease-out;
             -o-transition: all 0.1s ease-out;
-            transition: all 0.1s ease-out;
+            transition: all 0.1s ease-out; */
         }
         #itune ul li img {
             display: block;
@@ -84,6 +83,7 @@
             holder.find("li").click(function(){
                 holder.find("li").removeClass("selected");
                 $(this).addClass("selected");
+                console.log($(this).data("col"),$(this).data("row"));
             });
 
             $(window).resize(function() {
@@ -99,29 +99,31 @@
                     docW = $(window).width(), 
                     docH = $(window).height(), 
                     cRow = 0, 
-                    cCol = 0;
+                    cCol = 0,
+                    excesPad = 0;
                 
                 if(docMW < docW) {
                     maxCols = Math.floor( (docW - minPad) / (imgW + minPad) );
+                    excesPad = (docW - minPad - (maxCols * (imgW + minPad))) / maxCols;
                 } else {
-                    maxCols = minCols
+                    maxCols = minCols;
+                    excesPad = 0;
                 }
 
                 holder.css("minWidth",docMW+"px").find("li").each(function(i,elem){                    
                     
                     $(elem).css({
-                        "left"  : cCol * (imgW+minPad) + minPad + "px",
-                        "top"   : cRow * (imgH+minPad) + minPad + "px"
-                    });
+                        "left"  : (cCol * (imgW+minPad+excesPad) + minPad ) + "px",
+                        "top"   : (cRow * (imgH+minPad) + minPad) + "px"
+                    }).data({ row : cRow , col : cCol});
 
                     cCol++;
                     if(cCol%maxCols == 0) {
                         cRow++;
                         cCol = 0;
                     }
+                });
 
-                    console.log(cRow , cCol);
-                })
             }
 
         });
