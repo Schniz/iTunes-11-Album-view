@@ -23,11 +23,11 @@
             width: 160px;
             height: 160px;
             z-index: 8;
-            /* -webkit-transition: all 0.5s ease-out;
+            /*-webkit-transition: all 0.5s ease-out;
             -moz-transition: all 0.5s ease-out;
             -ms-transition: all 0.1s ease-out;
             -o-transition: all 0.1s ease-out;
-            transition: all 0.1s ease-out; */
+            transition: all 0.1s ease-out;*/
         }
         #itune ul li img {
             display: block;
@@ -55,6 +55,14 @@
             transform: scale(1.09);
         }
 
+        #itune  #contents {
+            position: absolute;;
+            background-color: #666;
+            width: 100%;
+            height: 300px;
+            display: none;
+        }
+
 
     </style>
 </head>
@@ -62,28 +70,34 @@
     <div id="itune">
         
     </div>
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script>
         $(function(){
             var holder = $("#itune"),
+                contents,
                 i,
                 numofimages = 10,
-                lis = [], imgW = 160, imgH = 160;
+                lis = [], imgW = 160, imgH = 160, selectedRow = -2, selectedTile = -2;
 
             for(i = 1; i <= 10; i++){
-                lis.push("<img src='img/img"+i+".jpg' />");
+                lis.push("<img src='img/img"+i+".jpg' data-num='"+i+"' />");
             }
 
             lis.sort(function() {return 0.5 - Math.random()});
 
-            holder.html($("<ul/>").html("<li>" + lis.join("</li><li>") + "</li>"));
-
+            holder.html($("<ul/>").html("<li>" + lis.join("</li><li>") + "</li>")).append("<div id='contents'/>");
+            contents = $('#contents');
             arrange_tiles();
 
             holder.find("li").click(function(){
                 holder.find("li").removeClass("selected");
                 $(this).addClass("selected");
                 console.log($(this).data("col"),$(this).data("row"));
+                selectedTile = $(this).find("img").data("num");
+                selectedRow = $(this).data("row");
+                contents.show();
+                arrange_tiles();
             });
 
             $(window).resize(function() {
@@ -100,6 +114,7 @@
                     docH = $(window).height(), 
                     cRow = 0, 
                     cCol = 0,
+                    spaceforpoput = 0,
                     excesPad = 0;
                 
                 if(docMW < docW) {
@@ -110,11 +125,21 @@
                     excesPad = 0;
                 }
 
+                if(selectedRow > -1) {
+                    contents.css({ "top" : (selectedRow+1) * (imgH+minPad)  + minPad })
+                }
+
                 holder.css("minWidth",docMW+"px").find("li").each(function(i,elem){                    
                     
+                    if(cRow >= (selectedRow+1) && selectedRow > -1 ){
+                        spaceforpoput = 300 + minPad;
+                    } else {
+                        spaceforpoput = 0;
+                    }
+
                     $(elem).css({
-                        "left"  : (cCol * (imgW+minPad+excesPad) + minPad ) + "px",
-                        "top"   : (cRow * (imgH+minPad) + minPad) + "px"
+                        "left"  : (cCol * (imgW+minPad+excesPad) + minPad ) ,
+                        "top"   : (cRow * (imgH+minPad) + spaceforpoput + minPad)
                     }).data({ row : cRow , col : cCol});
 
                     cCol++;
